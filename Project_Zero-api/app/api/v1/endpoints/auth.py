@@ -1,33 +1,39 @@
 from fastapi import APIRouter, Response, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from passlib.context import CryptContext
 from ..schemas import auth_schema
 from ....database import database
-from ....utils.crud import user_crud 
+from ....utils.config import settings
+from ....utils import oauth2
+from ....database import models
+
+
+pwd_context = CryptContext(schemes=[settings.pwd_context_scheme],
+                           deprecated="auto")
 
 
 router = APIRouter(tags=["authentications"])
 
-@router.post("/login", response_model=auth_schema.UserToken)
+@router.post("/token", response_model=auth_schema.UserToken)
 async def login(response: Response,
-                user_credential: OAuth2PasswordRequestForm = Depends(),
+                user_credentials: OAuth2PasswordRequestForm = Depends(),
                 db: Session = Depends(database.get_db)):
     
-    user = user_crud.get_by_email(db, user_credential.username)
+    user = db.query(models.Users).filter(models.Users.email == user_credentials.username).first()
     
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Invalid credentials")
     
-    if not user_crud.verify_password(db,
-                                     user_credential.password,
-                                     user.password):
+    if not pwd_context.verify(user_credentials.password,
+                              user.password):
         
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Invalid credentials")
     
     
-    access_token = user_crud.create_access_token({"user_id": user.id})
+    access_token = oauth2.create_access_token({"user_id": user.id})
     
     response.set_cookie(key="access_token",
                         value=f"Bearer {access_token}",
