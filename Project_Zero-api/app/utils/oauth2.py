@@ -33,7 +33,8 @@ def create_access_token(data: dict):
     
     return encoded_jwt
 
-def verify_access_token(token: str, credentials_exception: HTTPException):
+def verify_access_token(token: str = Depends(oauth2_scheme),
+                         credentials_exception: HTTPException = None):
     
     try:
         payload = jwt.decode(token,

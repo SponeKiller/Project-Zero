@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 
 
-
 class UserToken(BaseModel):
 
     access_token: str
