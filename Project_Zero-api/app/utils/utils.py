@@ -1,13 +1,15 @@
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 import pytz
-from ..database import database, models
+from typing import Tuple
+import secrets
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from sqlalchemy import desc
 from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer
 from .config import settings
-
+from ..database import database, models
 class TokenData(BaseModel):
     access_token: str
     token_type: str
@@ -15,7 +17,7 @@ class TokenData(BaseModel):
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-def create_access_token(data: dict):
+def create_access_token(data: dict) -> str:
     
     to_encode = data.copy()
     
@@ -33,8 +35,10 @@ def create_access_token(data: dict):
     
     return encoded_jwt
 
-def verify_access_token(token: str = Depends(oauth2_scheme),
-                         credentials_exception: HTTPException = None):
+def verify_access_token(
+    token: str = Depends(oauth2_scheme),
+    credentials_exception: HTTPException = None
+) -> TokenData:
     
     try:
         payload = jwt.decode(token,
@@ -55,7 +59,7 @@ def verify_access_token(token: str = Depends(oauth2_scheme),
 
 
 def get_current_user(token: str = Depends(oauth2_scheme),
-                     db: Session = Depends(database.get_db)):
+                     db: Session = Depends(database.get_db)) -> models.Users:
     
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -68,3 +72,39 @@ def get_current_user(token: str = Depends(oauth2_scheme),
     user = db.query(models.Users).filter(models.Users.id == token.id).first()
     
     return user
+
+
+
+def create_refresh_token() -> Tuple:
+    
+    expire = (
+        datetime.now(pytz.utc) 
+        + timedelta(minutes=settings.refresh_token_expire_minutes)
+    )
+    
+    token = secrets.token_hex(settings.refresh_token_length)
+    
+    return token, expire
+
+def verify_refresh_token(token: str,
+                         user_id: int,
+                         db: Session = Depends(database.get_db)) -> bool:
+        
+    is_valid = (
+        db.query(models.RefreshTokens.valid)
+        .order_by(desc(models.RefreshTokens.id))
+        .filter(
+            models.RefreshTokens.user_id == user_id, 
+            models.RefreshTokens.token == token
+        )
+        .first()
+    )
+    
+    return is_valid
+
+def create_csrf_token() -> str:
+    
+    token = secrets.token_hex(settings.csrf_token_length)   
+    
+    return token
+    
