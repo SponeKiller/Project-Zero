@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     secret_key: str
     algorithm: str
     access_token_expire_minutes: str
+    refresh_token_expire_minutes: str
+    refresh_token_length: str
+    csrf_token_length: str
     pwd_context_scheme: str
 
     class Config:
