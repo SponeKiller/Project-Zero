@@ -17,7 +17,7 @@ pwd_context = CryptContext(schemes=[settings.pwd_context_scheme],
 
 router = APIRouter(tags=["authentications"])
 
-router.post("/register")
+router.post("/users")
 async def register(response: Response,
                    user: register_schema.UserRegister,
                    db: Session = Depends(database.get_db)):
