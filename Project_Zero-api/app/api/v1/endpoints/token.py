@@ -54,7 +54,7 @@ async def login(response: Response,
             "token_type": "bearer"}
 
 
-@router.post("/session", response_model=token_schema.Token)  
+@router.post("/refresh", response_model=token_schema.Token)  
 async def refresh(response: Response,
                   user: token_schema.SessionUser,
                   refresh_token: str = Cookie(None),
