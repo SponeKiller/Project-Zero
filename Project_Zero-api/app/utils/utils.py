@@ -55,7 +55,7 @@ def verify_access_token(
     except JWTError:
         raise credentials_exception
     
-    return token_data
+    return token_data, payload
 
 
 def get_current_user(token: str = Depends(oauth2_scheme),
@@ -107,4 +107,5 @@ def create_csrf_token() -> str:
     token = secrets.token_hex(settings.csrf_token_length)   
     
     return token
-    
+
+

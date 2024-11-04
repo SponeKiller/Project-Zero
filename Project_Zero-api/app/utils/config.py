@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     refresh_token_length: str
     csrf_token_length: str
     pwd_context_scheme: str
+    cors_allow_origins: str
+    cors_allow_methods: str
+    cors_allow_headers: str
 
     class Config:
         env_file = os.getenv("Project_Zero-api/.env")
