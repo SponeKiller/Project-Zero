@@ -38,8 +38,8 @@ class CSRFTokens(Base):
                         nullable=False,
                         server_default=text("now()"))
 
-class UserActivityLog(Base):
-    __tablename__ = "page_tracing"
+class UserActivityLogs(Base):
+    __tablename__ = "useractivity_logs"
     
     id = Column(Integer, primary_key=True, nullable=False, autoincrement="auto")
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
