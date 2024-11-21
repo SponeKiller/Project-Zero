@@ -1,0 +1,1 @@
+// All non authenticated routes are defined here
