@@ -1,0 +1,66 @@
+.registration-page {
+    display: flex; /* Použití Flexboxu */
+    justify-content: center; /* Horizontální centrování */
+    align-items: center; /* Vertikální centrování */
+    min-height: 100vh; /* Zajistí výšku celé stránky */
+    width: 100%;
+    background: linear-gradient(120deg, #3498db, #2ecc71);
+  }
+  
+  .registration-page .form-container {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    width: 350px;
+    text-align: center;
+  }
+  
+  
+
+  .registration-page .registration-form h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #fff;
+  }
+  
+  .registration-page .form-group {
+    margin-bottom: 15px;
+    text-align: left;
+  }
+  
+  .registration-page label {
+    font-size: 14px;
+    color: #fff;
+  }
+  
+  .registration-page input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 5px;
+    font-size: 14px;
+  }
+  
+  .registration-page input:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.7);
+  }
+  
+  .registration-page .submit-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background: #2ecc71;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .registration-page .submit-btn:hover {
+    background: #27ae60;
+  }
+  
