@@ -1,3 +1,25 @@
+#BACKEND
 venv
-.env
-node_modules
+
+
+
+#FRONTEND
+Project_Zero-web/app/node_modules
+Project_Zero-web/app/.pnp
+Project_Zero-web/app/.pnp.js
+
+# testing
+Project_Zero-web/app/coverage
+
+# production
+Project_Zero-web/app/build
+
+# misc
+Project_Zero-web/app/.DS_Store
+Project_Zero-web/app/.env.development
+Project_Zero-web/app/.env.test.local
+Project_Zero-web/app/.env.production.local
+
+Project_Zero-web/app/npm-debug.log*
+Project_Zero-web/app/yarn-debug.log*
+Project_Zero-web/app/yarn-error.log*

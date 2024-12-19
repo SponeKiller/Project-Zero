@@ -1,30 +1,20 @@
 import React, { useState } from "react";
 import "./Registration.css";
+import { useHandlers } from "./hooks/useHandlers";
 
 const Registration = () => {
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
+  const { formData, handleChange, handleSubmit } = useHandlers({
+    username: '',
+    email: '',
+    password: ''
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert(`Registration Successful! Welcome, ${formData.username}!`);
-  };
 
   return (
     <div className="registration-page">
       <div className="form-container">
-        <form onSubmit={handleSubmit} className="registration-form">
+        <form onSubmit={handleSubmit(formData)} className="registration-form">
           <h2>Register</h2>
           <div className="form-group">
             <label htmlFor="username">Username</label>
