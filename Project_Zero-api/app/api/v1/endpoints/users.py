@@ -9,6 +9,7 @@ from app.database import database
 from app.database import models
 from app.utils.config import settings
 from app.utils import utils
+from .token import login
 
 
 
@@ -18,15 +19,23 @@ pwd_context = CryptContext(schemes=[settings.pwd_context_scheme],
                            deprecated="auto")
 
 
-router = APIRouter(
-    prefix="/users",
-    tags=["authentications"])
+router = APIRouter(prefix="/users",
+                   tags=["authentications"])
 
 
-router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def register(response: Response,
                    user: users_schema.UserRegister,
                    db: Session = Depends(database.get_db)):
+    
+    
+    retrieved_user = db.query(models.Users).filter(
+        models.Users.email == user.email
+    ).first()
+    
+    if retrieved_user is not None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="User already exists")
     
     user_phone_number = phonenumbers.parse(user.phone_number)
     
@@ -34,17 +43,12 @@ async def register(response: Response,
                             username=user.username,
                             password=pwd_context.hash(user.password),
                             phone_number_prefix=user_phone_number.country_code,
-                            phone_number=user_phone_number.national_number
-                            )
+                            phone_number=user_phone_number.national_number)
     
     db.add(new_user)
     db.commit()
     
     db.refresh(new_user)
     
-    access_token = utils.create_access_token({"user_id": new_user.id})
     
-    response.set_cookie(key="access_token",
-                        value=f"Bearer {access_token}",
-                        httponly=True)
     

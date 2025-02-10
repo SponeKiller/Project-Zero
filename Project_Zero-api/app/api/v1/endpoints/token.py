@@ -62,7 +62,9 @@ async def refresh(response: Response,
                   refresh_token: str = Cookie(None),
                   db: Session = Depends(database.get_db)) -> token_schema.Token:
     
-    user = db.query(models.Users).filter(models.Users.id == user.user_id).first()
+    user = db.query(models.Users).filter(
+        models.Users.id == user.user_id
+    ).first()
     
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,

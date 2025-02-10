@@ -1,5 +1,5 @@
 from jose import JWTError, jwt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import pytz
 from typing import Tuple
 import secrets
@@ -21,11 +21,7 @@ def create_access_token(data: dict) -> str:
     
     to_encode = data.copy()
     
-    expire = (
-        datetime.now(pytz.utc) 
-        + timedelta(minutes=settings.access_token_expire_minutes)
-    
-    )
+    expire = create_UTC_exp_time(int(settings.access_token_expire_minutes))
     
     to_encode.update({"exp": expire})
     
@@ -77,12 +73,9 @@ def get_current_user(token: str = Depends(oauth2_scheme),
 
 def create_refresh_token() -> Tuple:
     
-    expire = (
-        datetime.now(pytz.utc) 
-        + timedelta(minutes=settings.refresh_token_expire_minutes)
-    )
+    expire = create_UTC_exp_time(int(settings.refresh_token_expire_minutes))
     
-    token = secrets.token_hex(settings.refresh_token_length)
+    token = secrets.token_hex(int(settings.refresh_token_length))
     
     return token, expire
 
@@ -104,8 +97,17 @@ def verify_refresh_token(token: str,
 
 def create_csrf_token() -> str:
     
-    token = secrets.token_hex(settings.csrf_token_length)   
+    token = secrets.token_hex(int(settings.csrf_token_length))   
     
     return token
 
+
+def create_UTC_exp_time(minutes: int) -> datetime:
+    
+    expire = (
+        datetime.now(timezone.utc) 
+        + timedelta(minutes=minutes)
+    )
+    
+    return expire
 
