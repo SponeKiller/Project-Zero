@@ -7,22 +7,29 @@ from ..utils import utils
 
 
 class LoggingMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
+    
+    async def dispatch(self, 
+                       request: Request, 
+                       call_next):
         
-        db: Session = await database.get_db()
-        
-        sid = getattr(request.state, "sid")
+        db: Session = next(database.get_db())
+        sid = request.state.sid
         url = request.url.path
         method = request.method
         ip_adress = request.client.host
         
-        _, payload = await utils.verify_access_token(
-            token=request.cookies.get("access_token")
-        )
-        user_id = payload.get("user_id")
+        # Check if the user is logged in
+        user_id = None
+        if request.cookies.get("access_token") is not None:
+            
+            _, payload = await utils.verify_access_token(
+                token=request.cookies.get("access_token")
+            )
+            user_id = payload.get("user_id")
         
-        if user_id:
-            logging = models.UserActivityLog(user_id=user_id, 
+        # Create a new log entry
+        if user_id is not None:
+            logging = models.UserActivityLogs(user_id=user_id, 
                                              session_id=sid,
                                              ip_adress=ip_adress,
                                              endpoint=url,
@@ -32,6 +39,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
                                          ip_adress=ip_adress,
                                          endpoint=url,
                                          method=method)
+            
         db.add(logging)
         db.commit()
         

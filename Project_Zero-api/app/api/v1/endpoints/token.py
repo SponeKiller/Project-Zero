@@ -2,11 +2,13 @@ from fastapi import APIRouter, Response, Depends, HTTPException, status, Cookie
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
+
 from ..schemas import token_schema
-from ....database import database
-from ....utils.config import settings
-from ....utils import utils
-from ....database import models
+from app.database import database
+from app.database import models
+from app.utils.config import settings
+from app.utils import utils
+
 
 
 pwd_context = CryptContext(schemes=[settings.pwd_context_scheme],
@@ -60,7 +62,9 @@ async def refresh(response: Response,
                   refresh_token: str = Cookie(None),
                   db: Session = Depends(database.get_db)) -> token_schema.Token:
     
-    user = db.query(models.Users).filter(models.Users.id == user.user_id).first()
+    user = db.query(models.Users).filter(
+        models.Users.id == user.user_id
+    ).first()
     
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
