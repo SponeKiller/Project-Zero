@@ -1,5 +1,5 @@
 import os
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict 
 
 class Settings(BaseSettings):
     database_hostname: str
@@ -18,7 +18,9 @@ class Settings(BaseSettings):
     cors_allow_methods: str
     cors_allow_headers: str
 
-    class Config:
-        env_file = os.getenv("Project_Zero-api/.env")
+    model_config = SettingsConfigDict(env_file=".env",
+                                      env_file_encoding="utf-8",
+                                      case_sensitive=False,
+                                      extra = "ignore")
         
 settings = Settings()

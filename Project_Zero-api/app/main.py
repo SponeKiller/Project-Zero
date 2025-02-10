@@ -1,9 +1,12 @@
 from fastapi import FastAPI
-from .api.v1 import routers as routers_v1
 from fastapi.middleware.cors import CORSMiddleware
-from .middleware.logging_middleware import LoggingMiddleware
-from .middleware.sid_middleware import SIDMiddleware
-from .utils.config import settings
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+
+
+from app.api.v1 import routers as routers_v1
+from app.middleware.logging import LoggingMiddleware
+from app.middleware.sid import SIDMiddleware
+from app.utils.config import settings
 
 app = FastAPI()
 
@@ -19,8 +22,9 @@ app.add_middleware(
 )
 
 ##HTTP
-app.add_middleware('http')(SIDMiddleware)
-app.add_middleware('http')(LoggingMiddleware)
+app.add_middleware(LoggingMiddleware)
+app.add_middleware(SIDMiddleware)
+
 
 
 
