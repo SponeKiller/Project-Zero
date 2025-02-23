@@ -1,19 +1,20 @@
+#BACKEND
 venv
-<<<<<<< Updated upstream
-.env
-node_modules
-=======
 __pycache__
 alembic
 alembic.ini
-.env
-
-
+.env.development
 
 #FRONTEND
 Project_Zero-web/app/node_modules
 Project_Zero-web/app/.pnp
 Project_Zero-web/app/.pnp.js
+
+# ENV
+.env.development.local
+.env.test.local
+.env.production.local
+
 
 # testing
 Project_Zero-web/app/coverage
@@ -30,4 +31,3 @@ Project_Zero-web/app/.env.production.local
 Project_Zero-web/app/npm-debug.log*
 Project_Zero-web/app/yarn-debug.log*
 Project_Zero-web/app/yarn-error.log*
->>>>>>> Stashed changes
