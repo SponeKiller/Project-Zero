@@ -1,25 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import "./Registration.css";
+import { useHandlers } from "./hooks/useHandlers";
 
 const Registration = () => {
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
+  const { formData, errorMessage, message, handleChange, handleSubmit } = useHandlers({
+    username: '',
+    email: '',
+    phoneNumber: '',
+    password: '',
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert(`Registration Successful! Welcome, ${formData.username}!`);
-  };
 
   return (
     <div className="registration-page">
@@ -28,15 +19,15 @@ const Registration = () => {
           <h2>Register</h2>
           <div className="form-group">
             <label htmlFor="username">Username</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              placeholder="Enter your username"
-              required
-            />
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="Enter your username"
+                required
+              />
           </div>
           <div className="form-group">
             <label htmlFor="email">Email</label>
@@ -47,6 +38,18 @@ const Registration = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="phoneNumber">Phone Number</label>
+            <input
+              type="phoneNumber"
+              id="phoneNumber"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              placeholder="Enter your phone number"
               required
             />
           </div>
@@ -63,6 +66,8 @@ const Registration = () => {
             />
           </div>
           <button type="submit" className="submit-btn">Sign Up</button>
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
+          {message && <p className="message">{message}</p>}
         </form>
       </div>
     </div>

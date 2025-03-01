@@ -36,6 +36,7 @@
   
   .registration-page input {
     width: 100%;
+    box-sizing: border-box;
     padding: 10px;
     border: none;
     border-radius: 5px;
@@ -46,6 +47,22 @@
   .registration-page input:focus {
     outline: none;
     box-shadow: 0 0 5px rgba(52, 152, 219, 0.7);
+  }
+
+  .registration-page .error-message {
+    color: #e20a0a;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 5px;
+    text-align: center;
+  }
+
+  .registration-page .message {
+    color: #07bc34;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 5px;
+    text-align: center;
   }
   
   .registration-page .submit-btn {
