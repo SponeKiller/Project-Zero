@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import registerUser from '../services/registerService.js';
+import {toSnakeCase} from '../../../utils/rqUtils.js';
 
 export const useHandlers = (initialValues) => {
     const [formData, setFormData] = useState(initialValues);
+    const [message, setMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -12,15 +15,28 @@ export const useHandlers = (initialValues) => {
         }));
     };
 
-    const handleSubmit = async (data) => async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
         try {
-            const response = await registerUser(data);
-            console.log('User registered:', response);
+            await registerUser(toSnakeCase(formData));
+            setFormData(initialValues);
+            setMessage('User registered successfully');
+            setErrorMessage('');    
+          
           } catch (error) {
-            console.error('Registration failed:', error);
+            
+            const status = error.response.status;
+            let errorMessage = 'Something went wrong';
+
+            if (status === 400) errorMessage = "User already exists";
+            if (status === 500) errorMessage = "Server error, try again later";
+            setErrorMessage(errorMessage);
+            setMessage('');       
+
+
           }
       };
 
-    return { formData, handleChange, handleSubmit };
+    return { formData, errorMessage, message, handleChange, handleSubmit };
 };

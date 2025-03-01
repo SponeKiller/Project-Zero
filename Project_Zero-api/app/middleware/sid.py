@@ -10,7 +10,6 @@ class SIDMiddleware(BaseHTTPMiddleware):
         
         request.state.sid = sid
         
-        print(request.state._state)
         response = await call_next(request)
 
         if request.cookies.get("sid") is None:
