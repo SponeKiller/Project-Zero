@@ -18,7 +18,7 @@ pwd_context = CryptContext(schemes=[settings.pwd_context_scheme],
 router = APIRouter(prefix="/token",
                    tags=["authentications"])
 
-@router.post("/", response_model=token_schema.Token)
+@router.post("", response_model=token_schema.Token)
 async def login(response: Response,
                 user_credentials: OAuth2PasswordRequestForm = Depends(),
                 db: Session = Depends(database.get_db)) -> token_schema.Token:
