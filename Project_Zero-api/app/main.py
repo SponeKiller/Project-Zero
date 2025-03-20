@@ -15,10 +15,10 @@ app = FastAPI()
 ##CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_allow_origins,
+    allow_origins=settings.cors_allow_origins.split(","),
     allow_credentials=True,
-    allow_methods=settings.cors_allow_methods,
-    allow_headers=settings.cors_allow_headers,
+    allow_methods=settings.cors_allow_methods.split(","),
+    allow_headers=settings.cors_allow_headers.split(","),
 )
 
 ##HTTP

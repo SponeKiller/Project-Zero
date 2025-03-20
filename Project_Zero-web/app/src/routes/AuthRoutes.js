@@ -1,1 +1,0 @@
-// Here Are authorized routes
