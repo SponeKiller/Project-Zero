@@ -10,9 +10,7 @@ from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer
 from .config import settings
 from ..database import database, models
-class TokenData(BaseModel):
-    access_token: str
-    token_type: str
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -31,31 +29,7 @@ def create_access_token(data: dict) -> str:
     
     return encoded_jwt
 
-def verify_access_token(
-    token: str = Depends(oauth2_scheme),
-    credentials_exception: HTTPException = None
-) -> TokenData:
-    
-    try:
-        payload = jwt.decode(token,
-                             settings.secret_key,
-                             algorithms=settings.algorithm)
-        
-        id: str = payload.get("user_id")
-
-        if id is None:
-            raise credentials_exception
-
-        token_data = TokenData(id=id)
-        
-    except JWTError:
-        raise credentials_exception
-    
-    return token_data, payload
-
-
-def get_current_user(token: str = Depends(oauth2_scheme),
-                     db: Session = Depends(database.get_db)) -> models.Users:
+def verify_access_token(token: str = Depends(oauth2_scheme)) -> dict:
     
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -63,7 +37,28 @@ def get_current_user(token: str = Depends(oauth2_scheme),
         headers={"WWW-Authenticate": "Bearer"},
     )
     
-    token = verify_access_token(token, credentials_exception)
+    try:
+        payload = jwt.decode(token,
+                             settings.secret_key,
+                             algorithms=settings.algorithm)
+        
+
+        if payload.get("user_id") is None:
+            raise credentials_exception
+
+        
+    except JWTError:
+        
+        raise credentials_exception
+    
+    return payload
+
+
+def get_current_user(token: str = Depends(oauth2_scheme),
+                     db: Session = Depends(database.get_db)) -> models.Users:
+    
+    
+    token = verify_access_token(token)
     
     user = db.query(models.Users).filter(models.Users.id == token.id).first()
     

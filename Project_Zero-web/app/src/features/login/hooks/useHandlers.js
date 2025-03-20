@@ -2,10 +2,12 @@ import { useState } from 'react';
 import loginUser from '../services/loginService.js';
 import {toSnakeCase} from '../../../utils/rqUtils.js';
 
+
 export const useHandlers = (initialValues) => {
     const [formData, setFormData] = useState(initialValues);
     const [message, setMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [verified, setVerified] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -21,11 +23,11 @@ export const useHandlers = (initialValues) => {
         try {
             await loginUser(toSnakeCase(formData));
             setFormData(initialValues);
-            setMessage('User logged in successfully');
+            setVerified(true);
             setErrorMessage('');
             
           } catch (error) {
-            const status = error.response.status;
+            const status = error?.response?.status ?? 0;
             let errorMessage = 'Something went wrong';
 
             if (status === 400) errorMessage = "Invalid request";
@@ -38,5 +40,5 @@ export const useHandlers = (initialValues) => {
           }
       };
 
-    return { formData, errorMessage, message, handleChange, handleSubmit };
+    return { formData, errorMessage, message, verified, handleChange, handleSubmit };
 };

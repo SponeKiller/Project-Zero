@@ -11,7 +11,8 @@ const loginUser = async (userData) => {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         }); 
-        return response.data;
+        sessionStorage.setItem('accessToken', response.data.access_token);
+
     } catch (error) {
         throw error;
     }

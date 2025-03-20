@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Response, Depends, HTTPException, status, Cookie
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import APIRouter, Response, Depends, HTTPException, status, Cookie, Security
+from fastapi.security import OAuth2PasswordRequestForm, HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
@@ -10,6 +10,7 @@ from app.utils.config import settings
 from app.utils import utils
 
 
+bearer_scheme = HTTPBearer()
 
 pwd_context = CryptContext(schemes=[settings.pwd_context_scheme],
                            deprecated="auto")
@@ -54,6 +55,15 @@ async def login(response: Response,
     
     return {"access_token": access_token,   
             "token_type": "bearer"}
+    
+@router.get("/me", response_model=token_schema.TokenData)
+async def me(
+    credentials: HTTPAuthorizationCredentials = Security(bearer_scheme)
+):
+    
+    token_data = utils.verify_access_token(credentials.credentials)
+    
+    return token_data
 
 
 @router.post("/refresh", response_model=token_schema.Token)  
@@ -81,7 +91,7 @@ async def refresh(response: Response,
             "token_type": "bearer"}
     
 
-@router.delete("/")
+@router.delete("")
 async def logout(response: Response):
     
     response.delete_cookie(key="access_token")
