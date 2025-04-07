@@ -1,12 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
-
+import sentry_sdk
 
 from app.api.v1 import routers as routers_v1
 from app.middleware.logging import LoggingMiddleware
 from app.middleware.sid import SIDMiddleware
 from app.utils.config import settings
+
+sentry_sdk.init(
+    dsn=settings.sentry_dsn,
+    traces_sample_rate=1.0,
+    send_default_pii=True
+)
 
 app = FastAPI()
 

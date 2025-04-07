@@ -1,13 +1,13 @@
-from jose import JWTError, jwt
 from datetime import datetime, timedelta, timezone
-import pytz
 from typing import Tuple
 import secrets
-from pydantic import BaseModel
+
+from fastapi import HTTPException, APIRouter, status, Depends, Request
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
-from fastapi import HTTPException, status, Depends
-from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+
 from .config import settings
 from ..database import database, models
 
@@ -105,4 +105,33 @@ def create_UTC_exp_time(minutes: int) -> datetime:
     )
     
     return expire
+
+async def verify_and_store_user(
+    request: Request,
+    payload=Depends(verify_access_token),
+):
+    """
+    Verify the access token and store the user in the request state.
+    
+    Args:
+        request (Request): The HTTP request object.
+        payload (dict): The decoded JWT payload.
+    """
+    
+    request.state.user = payload
+
+
+def include_secure_router(main_router: APIRouter, subrouter: APIRouter) -> None:
+    """
+    Include a secure router with token verification.
+    
+    Args:
+        main_router (APIRouter): The main router to include the subrouter in.
+        subrouter (APIRouter): The subrouter to be included.
+
+    """
+    main_router.include_router(
+        subrouter,
+        dependencies=[Depends(verify_and_store_user)]
+    )
 
