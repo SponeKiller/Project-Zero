@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm, HTTPBearer, HTTPAuthoriz
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
-from ..schemas import token_schema
+from ..schemas import token as schema
 from app.database import database
 from app.database import models
 from app.utils.config import settings
@@ -19,10 +19,10 @@ pwd_context = CryptContext(schemes=[settings.pwd_context_scheme],
 router = APIRouter(prefix="/token",
                    tags=["authentications"])
 
-@router.post("", response_model=token_schema.Token)
+@router.post("", response_model=schema.Token)
 async def login(response: Response,
                 user_credentials: OAuth2PasswordRequestForm = Depends(),
-                db: Session = Depends(database.get_db)) -> token_schema.Token:
+                db: Session = Depends(database.get_db)) -> schema.Token:
     
     user = db.query(models.Users).filter(models.Users.email == user_credentials.username).first()
     
@@ -56,7 +56,7 @@ async def login(response: Response,
     return {"access_token": access_token,   
             "token_type": "bearer"}
     
-@router.get("/me", response_model=token_schema.TokenData)
+@router.get("/me", response_model=schema.TokenData)
 async def me(
     credentials: HTTPAuthorizationCredentials = Security(bearer_scheme)
 ):
@@ -66,11 +66,11 @@ async def me(
     return token_data
 
 
-@router.post("/refresh", response_model=token_schema.Token)  
+@router.post("/refresh", response_model=schema.Token)  
 async def refresh(response: Response,
-                  user: token_schema.SessionUser,
+                  user: schema.SessionUser,
                   refresh_token: str = Cookie(None),
-                  db: Session = Depends(database.get_db)) -> token_schema.Token:
+                  db: Session = Depends(database.get_db)) -> schema.Token:
     
     user = db.query(models.Users).filter(
         models.Users.id == user.user_id

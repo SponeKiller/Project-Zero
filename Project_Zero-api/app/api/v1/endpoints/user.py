@@ -4,7 +4,7 @@ from fastapi import APIRouter, Response, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
-from ..schemas import users_schema
+from ..schemas import user as schema
 from app.database import database
 from app.database import models
 from app.utils.config import settings
@@ -25,7 +25,7 @@ router = APIRouter(prefix="/users",
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def register(response: Response,
-                   user: users_schema.UserRegister,
+                   user: schema.UserRegister,
                    db: Session = Depends(database.get_db)):
     
     
@@ -49,6 +49,4 @@ async def register(response: Response,
     db.commit()
     
     db.refresh(new_user)
-    
-    
     

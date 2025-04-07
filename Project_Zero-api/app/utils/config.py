@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     cors_allow_origins: str
     cors_allow_methods: str
     cors_allow_headers: str
+    sentry_dsn: str
+    openai_api_key: str
+    openai_model: str
 
     model_config = SettingsConfigDict(env_file=env_files,
                                       env_file_encoding="utf-8",

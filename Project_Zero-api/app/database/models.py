@@ -20,7 +20,7 @@ class RefreshTokens(Base):
     __tablename__ = "refresh_tokens"
     
     id = Column(Integer, primary_key=True, nullable=False, autoincrement="auto")
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     token = Column(String, nullable=False)
     valid = Column(Boolean, nullable=False, default=True)
     created_at = Column(TIMESTAMP(timezone=True), 
@@ -31,7 +31,7 @@ class CSRFTokens(Base):
     __tablename__ = "csrf_tokens"
     
     id = Column(Integer, primary_key=True, nullable=False, autoincrement="auto")
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     token = Column(String, nullable=False)
     valid = Column(Boolean, nullable=False, default=True)
     created_at = Column(TIMESTAMP(timezone=True), 
@@ -42,7 +42,7 @@ class UserActivityLogs(Base):
     __tablename__ = "useractivity_logs"
     
     id = Column(Integer, primary_key=True, nullable=False, autoincrement="auto")
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
     sesion_id = Column(String, nullable=False)
     ip_adress = Column(String, nullable=False)
     endpoint = Column(String, nullable=False)
@@ -59,6 +59,27 @@ class SessionLogs(Base):
     ip_adress = Column(String, nullable=False)
     endpoint = Column(String, nullable=False)
     method = Column(String, nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), 
+                        nullable=False,
+                        server_default=text("now()"))
+    
+
+class Chats(Base):
+    __tablename__ = "chats"
+    
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement="auto")
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), 
+                        nullable=False,
+                        server_default=text("now()"))
+
+class Messages(Base):
+    __tablename__ = "messages"
+    
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement="auto")
+    chat_id = Column(Integer, ForeignKey("chats.id", ondelete="CASCADE"), nullable=False)
+    role = Column(String, nullable=False)
+    content = Column(String, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), 
                         nullable=False,
                         server_default=text("now()"))
