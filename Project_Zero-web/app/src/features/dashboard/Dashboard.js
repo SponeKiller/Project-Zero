@@ -1,14 +1,15 @@
-import "./Dashboard.css";
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { logout } from '../../utils/logout.js';
+
+import "./Dashboard.css";
 
 const Dashboard = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const navigate = useNavigate();
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-    const logout = () => {
-        console.log('User logged out');
-        // Přidej zde logiku pro odhlášení
-    };
 
     return (
         <div className="dashboard-page">
@@ -21,7 +22,6 @@ const Dashboard = () => {
                 {isMenuOpen && (
                     <div className="dropdown-menu">
                         <ul>
-                            <li>User Profile</li>
                             <li onClick={logout}>Logout</li>
                         </ul>
                     </div>
@@ -44,6 +44,12 @@ const Dashboard = () => {
                 </div>
             </section>
         </main>
+
+        <div className="start-chat">
+            <button className="chat-button" onClick={() => navigate('/chat')}>
+                Go to Chat
+            </button>  
+        </div> 
     </div>
     );
 };

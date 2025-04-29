@@ -105,3 +105,27 @@
     margin: 0;
     color: #666;
 }
+
+.dashboard-page .start-chat {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+  
+.dashboard-page .chat-button {
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    border: none;
+    padding: 40px 120px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 25px;
+    transition: background 0.3s, transform 0.2s;
+}
+  
+.dashboard-page .chat-button:hover {
+    background: linear-gradient(135deg, #6dd5ed, #2193b0);
+    transform: scale(1.05);
+}

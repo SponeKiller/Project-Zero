@@ -71,6 +71,7 @@
 .login-page .submit-btn {
     width: 100%;
     padding: 10px;
+    margin-left: 0px;
     margin-top: 5px;
     border: none;
     border-radius: 5px;

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import registerUser from '../services/registerService.js';
-import {toSnakeCase} from '../../../utils/rqUtils.js';
 
 export const useHandlers = (initialValues) => {
     const [formData, setFormData] = useState(initialValues);
@@ -19,7 +18,7 @@ export const useHandlers = (initialValues) => {
         e.preventDefault();
 
         try {
-            await registerUser(toSnakeCase(formData));
+            await registerUser(formData);
             setFormData(initialValues);
             setMessage('User registered successfully');
             setErrorMessage('');    

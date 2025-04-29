@@ -4,7 +4,7 @@ __pycache__
 .env.development
 
 #FRONTEND
-Project_Zero-web/app/node_modules
+node_modules
 Project_Zero-web/app/.pnp
 Project_Zero-web/app/.pnp.js
 
@@ -21,6 +21,7 @@ Project_Zero-web/app/coverage
 Project_Zero-web/app/build
 
 # misc
+
 Project_Zero-web/app/.DS_Store
 Project_Zero-web/app/.env.development
 Project_Zero-web/app/.env.test.local
