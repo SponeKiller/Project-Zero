@@ -1,53 +1,75 @@
-import { useState, useEffect, useRef } from "react";
+
+import { useState } from "react";
+import { FiRotateCcw } from 'react-icons/fi';
+
+import { useMessageHandlers } from "./hooks/useMessageHandlers.js";
+import { Sidebar } from "./components/js/Sidebar.js";
 import "./Chat.css";
 
 export default function ChatApp() {
-  const [messages, setMessages] = useState([
-    { text: "Ahoj! Jak ti mohu pomoci?", sender: "bot" }
-  ]);
-  const [input, setInput] = useState("");
-  const messagesEndRef = useRef(null);
 
-  const sendMessage = () => {
-    if (!input.trim()) return;
-    const newMessages = [...messages, { text: input, sender: "user" }];
-    setMessages(newMessages);
-    setInput("");
+  const [selectedChatId, setSelectedChatId] = useState(null);
+  const { messages, userMessage, handleChange, handleSubmit, getMessages, regenMessage } = 
+  useMessageHandlers(
+    [
+      {
+        role: "system",
+        content: "You are a helpful assistant."
+      },
+      {
+        role: "user",
+        content: ""
+      }
+    ]
+  )
 
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { text: "Zatím neumím odpovídat, ale pracuji na tom!", sender: "bot" }
-      ]);
-    }, 1000);
-  };
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  const chat = Array.isArray(messages)
+    ? messages.filter(msg => msg.role === 'user' || msg.role === 'assistant')
+    : [];
 
   return (
     <div className="chat-container">
-      <div className="chat-messages">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`message ${msg.sender}`}
-          >
-            {msg.text}
+      <Sidebar 
+        onSelectChat={ getMessages }
+        setSelectedChatId={ setSelectedChatId } 
+        selectedChatId={ selectedChatId } 
+      />
+      {selectedChatId !== null && ( 
+        <div className="chat-wrapper">
+          <div className="chat-messages">
+          {chat.map((msg, i) => {
+            const isLastAssistant =
+            msg.role === 'assistant' && i === chat.length - 1;
+
+            return (
+              <div key={i} className={`message-wrapper ${msg.role}`}>
+                <div className={`message ${msg.role}`}>
+                  {msg.content}
+                  {isLastAssistant && (
+                    <button
+                      className="reload-button"
+                      onClick={(e) => regenMessage(e, selectedChatId)}
+                      aria-label="Reload assistant response"
+                    >
+                      <FiRotateCcw size={16} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}            
+          <div className="input-container">
+            <input
+              value={userMessage[1].content}
+              onChange={handleChange}
+              placeholder="Napiš zprávu..."
+              onKeyDown={(e) => e.key === "Enter" && handleSubmit(e, selectedChatId, userMessage)}
+            />
+            <button onClick={(e) => handleSubmit(e, selectedChatId, userMessage)}>📩</button>
           </div>
-        ))}
-        <div ref={messagesEndRef} />
+        </div>
       </div>
-      <div className="input-container">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Napiš zprávu..."
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-        />
-        <button onClick={sendMessage}>📩</button>
-      </div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import loginUser from '../services/loginService.js';
-import {toSnakeCase} from '../../../utils/rqUtils.js';
 
 
 export const useHandlers = (initialValues) => {
@@ -21,7 +20,7 @@ export const useHandlers = (initialValues) => {
         e.preventDefault();
 
         try {
-            await loginUser(toSnakeCase(formData));
+            await loginUser(formData);
             setFormData(initialValues);
             setVerified(true);
             setErrorMessage('');
