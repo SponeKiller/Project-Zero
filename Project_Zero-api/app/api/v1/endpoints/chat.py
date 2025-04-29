@@ -8,10 +8,26 @@ from app.database import models
 from app.services.chat import send_and_log_message, verify_chat_access
 
 
-
-
 router = APIRouter(prefix="/chats",
                    tags=["messages"])
+
+@router.get("", response_model=schema.ChatListOut)
+async def retrieve_chats(
+    request: Request,
+    db: Session = Depends(database.get_db)
+) -> schema.ChatListOut:
+    """
+    Retrieve all chats for the user.
+    """
+    
+    # Retrieve all chats for the user
+    chats = db.query(models.Chats).filter(
+        models.Chats.user_id == request.state.user['user_id']
+    ).all()
+    
+    chat_ids = [chat.id for chat in chats] 
+    
+    return {"chats": chat_ids}
 
 
 @router.get("/{chat_id}/messages", response_model=schema.ChatMessageOut)
@@ -59,7 +75,7 @@ async def create_chat(
     db.commit()
     db.refresh(new_chat)
     
-    return {"chat_id": new_chat.id}
+    return {"id": new_chat.id}
     
     
 
@@ -113,11 +129,11 @@ async def delete_chat(
     
     db.commit()
 
-@router.delete("/{chat_id}/messages", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{chat_id}/messages/{message_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_messages(
     request: Request,
     chat_id: int,
-    messages: schema.ChatMessageDel,
+    message_id: int,
     db: Session = Depends(database.get_db)
 ) -> None:
     """
@@ -130,27 +146,19 @@ async def delete_messages(
         db=db
     )
     
-    # Check if all messages exist in the database
-    input_ids = {m["id"] for m in messages.model_dump()["messages"]}
-
-    existing_ids = {
-        row[0] for row in db.query(models.Messages.id).filter(
-            models.Messages.chat_id == chat_id
-        ).all()
-    }
-
-    missing_ids = input_ids - existing_ids
     
-    if missing_ids:
+    deleted_count = (
+    db.query(models.Messages)
+      .filter(
+          models.Messages.chat_id == chat_id,
+          models.Messages.id == message_id
+      )
+      .delete(synchronize_session=False)
+    )
+    
+    if deleted_count == 0:
+        #Nothing was deleted = message_id not exists
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Message(s) with id(s) {missing_ids} not found in chat."
-        )
-    
-    # Delete messages from the database
-    db.query(models.Messages) \
-        .filter(models.Messages.chat_id == chat_id) \
-        .filter(models.Messages.id.in_([m["id"] for m in messages.model_dump()["messages"]])) \
-        .delete()
-    
-    db.commit()
+            detail=f"Message with ID {message_id} in chat {chat_id} not found"
+    )

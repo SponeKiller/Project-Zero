@@ -17,10 +17,8 @@ class ChatMessageOut(BaseModel):
     messages: List[MessageOut]
 
 class ChatOutput(BaseModel):
-    chat_id: int
-
-class MessageDel(BaseModel):
     id: int
     
-class ChatMessageDel(BaseModel):
-    messages: List[MessageDel]
+class ChatListOut(BaseModel):
+    chats: List[int]
+
