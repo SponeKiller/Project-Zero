@@ -4,10 +4,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
 
 ABS_DIR = Path(__file__).resolve().parent.parent
-APP_ENV = os.getenv("APP_ENV", "development")
 
 # Loaded file definition
-ENV_FILES = [".env", f".env.{APP_ENV}.local", f".env.{APP_ENV}"]
+ENV_FILES = [".env"]
 
 env_files = [os.path.join(ABS_DIR, file) for file in ENV_FILES]
 class Settings(BaseSettings):
