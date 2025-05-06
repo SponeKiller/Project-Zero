@@ -9,8 +9,8 @@ services:
       - /etc/letsencrypt/live/project-zero.cz/fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
       - /etc/letsencrypt/live/project-zero.cz/privkey.pem:/etc/ssl/private/privkey.pem:ro
     depends_on:
-      - frontend
-      - backend
+      - web
+      - api
   web:
     build:
       context: ./Project_Zero-web 
