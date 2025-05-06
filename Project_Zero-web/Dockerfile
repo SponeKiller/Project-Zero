@@ -7,9 +7,16 @@ COPY app .
 RUN npm run build 
 
 # 2) Run stage
-FROM nginx:alpine
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/build /usr/share/nginx/html
-# Sart application
-EXPOSE 80
-CMD ["nginx","-g","daemon off;"]
+FROM node:23-alpine
+WORKDIR /app
+
+## install small HTTP server
+RUN npm install -g serve
+
+COPY --from=build /app/build ./build
+
+## Run app
+EXPOSE 3000
+CMD ["serve", "-s", "build", "-l", "3000"]
+
+
